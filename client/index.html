@@ -99,5 +99,121 @@
 		</div>
 	</div>
 
+	<script>
+	var isRecording, playedGreeting;
+
+	Watson.watsonShow();
+
+	function getInterest(text) {
+		console.log('Interests', text);
+
+		$.ajax({
+			url: '/api/conversation/interest',
+			type: 'POST',
+			data: {
+				text: text
+			},
+			success: function(data) {
+				var output = data.conversation.output;
+				var message = output.text[0];
+				var area = output.area;
+
+				console.log(data, message, area);
+
+				Watson.speechToText(message, function (AudioObject) {
+					AudioObject.play();
+
+					setTimeout(function () {
+						if (area === 'everglades') {
+							window.location.href = '/exhibit.html';
+						}
+					}, 5000);
+				});
+			}
+		});
+	}
+
+	function handleFinishedRecording () {
+		isRecording = false;
+
+		Watson.watsonListenEnd();
+		Watson.watsonLoading();
+
+		Fr.voice.export(function(blob) {
+			var data = new FormData();
+			data.append('file', blob, 'audio.wav');
+
+			$.ajax({
+				url: '/api/conversation/speechToText/speechToText',
+				type: 'POST',
+				data: data,
+				contentType: false,
+				processData: false,
+				success: function(data) {
+					Watson.watsonLoadingEnd();
+
+					// TODO on success pass them to the next step
+					console.log(data);
+					// Hardcoded path for now (this can be very dynamic, depending on all the options
+					// available)
+					getInterest(data.status.results[0].alternatives[0].transcript);
+				}
+			});
+		}, 'blob');
+		Fr.voice.stop();
+	}
+
+	function handleStartRecording() {
+		isRecording = true;
+		Watson.watsonListen();
+
+		setTimeout(function() {
+			Watson.recordAudio();
+
+			// Only record for a few seconds
+			setTimeout(function () {
+				if (isRecording) {
+					handleFinishedRecording();
+				}
+			}, 10000);
+		}, 500);
+	}
+
+	$("#watson").click(function() {
+		// Play the greeting if applicable
+		if (!playedGreeting) {
+			playedGreeting = true;
+			Watson.watsonConnect();
+			Watson.watsonLoading();
+
+			Watson.speechToText('Hi!  What are you interested in today?', function (AudioObject) {
+				Watson.watsonLoadingEnd();
+				Watson.watsonSpeak();
+
+				AudioObject.play();
+
+				// Start recording the user
+				setTimeout(function () {
+					Watson.watsonSpeakEnd();
+					handleStartRecording();
+				}, 2000);
+			});
+
+			return;
+		}
+
+		// If we're talking to the user, handle accordingly
+		if (isRecording) {
+			handleFinishedRecording();
+		} else {
+			Watson.watsonConnect();
+			Watson.watsonLoading();
+			Watson.watsonLoadingEnd();
+			handleStartRecording();
+		}
+	});
+
+	</script>
+
 </body>
 </html>

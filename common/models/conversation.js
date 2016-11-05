@@ -1,16 +1,18 @@
 'use strict';
 
+var fs = require('fs');
 var credentials = require('../../credentials');
 var server = require('../../server/server');
 
-var ConversationModulde = require('watson-developer-cloud/conversation/v1');
-var conversation = new ConversationModulde(credentials.conversation);
+var ConversationModule = require('watson-developer-cloud/conversation/v1');
+var SpeechToTextModule = require('watson-developer-cloud/speech-to-text/v1');
+var TextToSpeechModule = require('watson-developer-cloud/text-to-speech/v1');
 
-var SpeechToText = require('watson-developer-cloud/speech-to-text/v1');
-var speechToText = new SpeechToText(credentials.speechToText);
+var conversation = new ConversationModule(credentials.conversation);
+var speechToText = new SpeechToTextModule(credentials.speechToText);
+var textToSpeech = new TextToSpeechModule(credentials.textToSpeech);
 
 module.exports = function(Conversation) {
-	// TODO User audio input w/ Waton
 
 	// Find the user's interest
 	Conversation.interest = function interest (text, next) {
@@ -20,23 +22,40 @@ module.exports = function(Conversation) {
 		}, function(err, res) {
 			if (err) {
 				next(err, null);
-				console.error(err);
 			} else {
 				next(null, res);
-				console.log(res);
 			}
 		});
 	};
 
 	// Handle audio upload (speech to text flow)
-	Conversation.speechToText = function speechToTextCallback(req, res, id, cb) {
+	Conversation.speechToText = function speechToTextCallback(req, res, id, next) {
 		var storage = server.dataSources.Storage.models.container;
 
+		// Handle upload the audio first
 		storage.getContainers(function (err, containers) {
 			storage.upload(req, res, { container: id }, function (err, d) {
-				cb(err, d);
+				// Now convert to text
+				var params = {
+					// hardcoded for now since we aren't saving a hash of this file
+					audio: fs.createReadStream(__dirname + '/../../uploads/speechToText/audio.wav'),
+					content_type: 'audio/wav; rate=44100'
+				};
+
+				speechToText.recognize(params, function(e, text) {
+					next(e, text);
+				});
 			});
 		});
+	};
+
+	// Handle watson's text to speech
+	Conversation.textToSpeech = function textToSpeechCallback (text, next) {
+		textToSpeech.synthesize({
+			text: text,
+			accept: 'audio/wav',
+			voice: 'en-US_LisaVoice'
+		}, next);
 	};
 
 	Conversation.remoteMethod('speechToText', {
@@ -47,6 +66,13 @@ module.exports = function(Conversation) {
 			{ arg: 'id', type: 'string' }
 		],
 		returns: { arg: 'status', type: 'object' }
+	});
+
+	Conversation.remoteMethod('textToSpeech', {
+		accepts: [
+			{ arg: 'text', type: 'string' }
+		],
+		returns: { arg: 'results', type: 'object' }
 	});
 
 	Conversation.remoteMethod('interest', {
