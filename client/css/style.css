@@ -91,6 +91,10 @@ h5 {
 	display: none;
 }
 
+#playAudioButton {
+	cursor: pointer;
+}
+
 /** Watson **/
 #watson {
 	position: fixed;

@@ -120,7 +120,7 @@
 
 				console.log(data, message, area);
 
-				Watson.speechToText(message, function (AudioObject) {
+				Watson.textToSpeech(message, function (AudioObject) {
 					AudioObject.play();
 
 					setTimeout(function () {
@@ -144,7 +144,7 @@
 			data.append('file', blob, 'audio.wav');
 
 			$.ajax({
-				url: '/api/conversation/speechToText/speechToText',
+				url: '/api/conversation/audioFolder/speechToText',
 				type: 'POST',
 				data: data,
 				contentType: false,
@@ -186,7 +186,7 @@
 			Watson.watsonConnect();
 			Watson.watsonLoading();
 
-			Watson.speechToText('Hi!  What are you interested in today?', function (AudioObject) {
+			Watson.textToSpeech('Hi!  What are you interested in today?', function (AudioObject) {
 				Watson.watsonLoadingEnd();
 				Watson.watsonSpeak();
 

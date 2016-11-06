@@ -9,7 +9,7 @@ var Watson = {
 		Fr.voice.record(false);
 	},
 
-	speechToText: function (text, callback) {
+	textToSpeech: function (text, callback) {
 		$.ajax({
 			url: '/api/conversation/textToSpeech',
 			type: 'POST',

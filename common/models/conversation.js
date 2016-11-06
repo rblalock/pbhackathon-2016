@@ -38,7 +38,7 @@ module.exports = function(Conversation) {
 				// Now convert to text
 				var params = {
 					// hardcoded for now since we aren't saving a hash of this file
-					audio: fs.createReadStream(__dirname + '/../../uploads/speechToText/audio.wav'),
+					audio: fs.createReadStream(__dirname + '/../../uploads/audioFolder/audio.wav'),
 					content_type: 'audio/wav; rate=44100'
 				};
 
@@ -53,8 +53,7 @@ module.exports = function(Conversation) {
 	Conversation.textToSpeech = function textToSpeechCallback (text, next) {
 		textToSpeech.synthesize({
 			text: text,
-			accept: 'audio/wav',
-			voice: 'en-US_LisaVoice'
+			accept: 'audio/wav'
 		}, next);
 	};
 

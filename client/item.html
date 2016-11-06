@@ -40,18 +40,20 @@
 		</div>
 
 		<div class="info">
-			<div class="audio">
+			<div id="playAudioButton" class="audio">
 				<i class="fa fa-headphones"></i>
 				<i class="fa fa-play-circle"></i>
 			</div>
 
-			<h4>
-				The Comprehensive Everglades Restoration Plan (CERP) is the plan enacted by the U.S. Congress for the restoration of the Everglades ecosystem in southern Florida.
-			</h4>
+			<div id="mainContent">
+				<h4>
+					The Comprehensive Everglades Restoration Plan (CERP) is the plan enacted by the U.S. Congress for the restoration of the Everglades ecosystem in southern Florida.
+				</h4>
 
-			<p>
-				When originally authorized by the U.S. Congress in 2000, it was estimated that CERP would cost a total of $8.2 billion and take approximately 30 years to complete. More recent estimates indicate that the plan would take approximately 50 years to implement, and would cost approximately $1.63 billion more than originally thought, plus additional adjustments for inflation.
-			</p>
+				<p>
+					When originally authorized by the U.S. Congress in 2000, it was estimated that CERP would cost a total of $8.2 billion and take approximately 30 years to complete. More recent estimates indicate that the plan would take approximately 50 years to implement, and would cost approximately $1.63 billion more than originally thought, plus additional adjustments for inflation.
+				</p>
+			</div>
 		</div>
 	</div>
 
@@ -67,6 +69,17 @@
 			</div>
 		</div>
 	</div>
+
+	<script>
+
+	$('#playAudioButton').click(function () {
+		var text = $('#mainContent').text();
+		Watson.textToSpeech(text, function (AudioObject) {
+			AudioObject.play();
+		});
+	});
+
+	</script>
 
 	</body>
 </html>
