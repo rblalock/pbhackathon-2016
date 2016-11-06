@@ -1,18 +1,37 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>South Florida Science Center and Aquarium</title>
-		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta name="apple-mobile-web-app-status-bar-style" content="black">
-		<meta name="viewport" content="width=device-width">
-		<link href="css/style.css" rel="stylesheet">
-		<link href="fontawesome/css/font-awesome.min.css" rel="stylesheet">
-		<link href="css/jquery-ui.css" rel="stylesheet">
-		<script src="js/jquery.min.js"></script>
-		<script src="js/jquery-ui.min.js"></script>
-		<script src="js/core.js" type="text/javascript"></script>
-	</head>
-	<body>
+<head>
+	<title>South Florida Science Center and Aquarium</title>
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="viewport" content="width=device-width">
+	<link href="css/style.css" rel="stylesheet">
+	<link href="fontawesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="css/jquery-ui.css" rel="stylesheet">
+	<script src="js/jquery.min.js"></script>
+	<script src="js/jquery-ui.min.js"></script>
+
+	<script src="src/recorder.js"></script>
+	<script src="src/Fr.voice.js"></script>
+
+	<script src="js/core.js" type="text/javascript"></script>
+</head>
+<body>
+
+	<div id="watson" style="display: none;">
+		<div class="prompt">
+			<i class="fa fa-2x fa-comments-o"></i>
+		</div>
+
+		<div class="speech" style="display: none;">
+			<div class="wave">
+				<i class="l"></i>
+				<i class="r"></i>
+			</div>
+		</div>
+
+		<audio controls src="" id="audio"></audio>
+	</div>
 
 	<div id="header">
 		<a href="exhibit.html">
@@ -51,7 +70,7 @@
 				</h4>
 
 				<p>
-					When originally authorized by the U.S. Congress in 2000, it was estimated that CERP would cost a total of $8.2 billion and take approximately 30 years to complete. More recent estimates indicate that the plan would take approximately 50 years to implement, and would cost approximately $1.63 billion more than originally thought, plus additional adjustments for inflation.
+					The Everglades is recognized both nationally and internationally as one of the world's most unique natural and cultural resources. Encompassing nearly 18,000 square miles of the southern tip of the Florida peninsula.  The Everglades and the greater Everglades ecosystem (spanning from the Kissimmee River basin north of Lake Okeechobee all the way south to Florida Bay) are also the focus of the world's largest intergovernmental watershed restoration effort.
 				</p>
 			</div>
 		</div>
@@ -72,6 +91,9 @@
 
 	<script>
 
+	var isRecording;
+	Watson.watsonShow();
+
 	$('#playAudioButton').click(function () {
 		var text = $('#mainContent').text();
 		Watson.textToSpeech(text, function (AudioObject) {
@@ -79,7 +101,77 @@
 		});
 	});
 
+	$("#watson").click(function() {
+		// If we're talking to the user, handle accordingly
+		if (isRecording) {
+			handleFinishedRecording();
+		} else {
+			Watson.watsonConnect();
+			Watson.watsonLoading();
+
+			Watson.textToSpeech(
+				'What did you think of the Everglades exhibit?',
+				function (AudioObject) {
+					Watson.watsonLoadingEnd();
+					Watson.watsonSpeak();
+
+					AudioObject.play();
+
+					// Start recording the user
+					setTimeout(function () {
+						Watson.watsonSpeakEnd();
+						handleStartRecording();
+					}, 1500);
+				}
+			);
+		}
+	});
+
+	function handleFinishedRecording () {
+		isRecording = false;
+
+		Watson.watsonListenEnd();
+		Watson.watsonLoading();
+
+		Fr.voice.export(function(blob) {
+			var data = new FormData();
+			data.append('file', blob, 'audio.wav');
+
+			$.ajax({
+				url: '/api/conversation/audioFolder/speechToText',
+				type: 'POST',
+				data: data,
+				contentType: false,
+				processData: false,
+				success: function(data) {
+					Watson.watsonLoadingEnd();
+					Watson.watsonConnectEnd();
+
+					console.log(data);
+					// TODO save results to survey
+				}
+			});
+		}, 'blob');
+		Fr.voice.stop();
+	}
+
+	function handleStartRecording() {
+		isRecording = true;
+		Watson.watsonListen();
+
+		setTimeout(function() {
+			Watson.recordAudio();
+
+			// Only record for a few seconds
+			setTimeout(function () {
+				if (isRecording) {
+					handleFinishedRecording();
+				}
+			}, 10000);
+		}, 500);
+	}
+
 	</script>
 
-	</body>
+</body>
 </html>

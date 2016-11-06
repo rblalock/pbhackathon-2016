@@ -7,10 +7,12 @@ var server = require('../../server/server');
 var ConversationModule = require('watson-developer-cloud/conversation/v1');
 var SpeechToTextModule = require('watson-developer-cloud/speech-to-text/v1');
 var TextToSpeechModule = require('watson-developer-cloud/text-to-speech/v1');
+var ToneAnalyzerModule = require('watson-developer-cloud/tone-analyzer/v3');
 
 var conversation = new ConversationModule(credentials.conversation);
 var speechToText = new SpeechToTextModule(credentials.speechToText);
 var textToSpeech = new TextToSpeechModule(credentials.textToSpeech);
+var toneAnalyzer = new ToneAnalyzerModule(credentials.toneAnalyzer);
 
 module.exports = function(Conversation) {
 
@@ -43,6 +45,7 @@ module.exports = function(Conversation) {
 				};
 
 				speechToText.recognize(params, function(e, text) {
+					console.log(text);
 					next(e, text);
 				});
 			});
@@ -55,6 +58,10 @@ module.exports = function(Conversation) {
 			text: text,
 			accept: 'audio/wav'
 		}, next);
+	};
+
+	Conversation.toneCheck = function toneCheck (text, next) {
+		toneAnalyzer.tone({ text: text }, next);
 	};
 
 	Conversation.remoteMethod('speechToText', {
@@ -77,6 +84,11 @@ module.exports = function(Conversation) {
 	Conversation.remoteMethod('interest', {
 		accepts: { arg: 'text', type: 'string' },
 		returns: { arg: 'conversation', type: 'object' }
+	});
+
+	Conversation.remoteMethod('toneCheck', {
+		accepts: { arg: 'text', type: 'string' },
+		returns: { arg: 'tone', type: 'object' }
 	});
 
 };

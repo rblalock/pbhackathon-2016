@@ -36,6 +36,11 @@ var Watson = {
 		$("#watson .speech").fadeIn(300);
 	},
 
+	watsonConnectEnd: function watsonConnectEnd() {
+		$("#watson .speech").fadeOut(200);
+		$("#watson .prompt").fadeIn(300);
+	},
+
 	watsonLoading: function watsonLoading() {
 		Watson.watsonInterval = setInterval(Watson.watsonLoadingAnim, 1000);
 	},
@@ -130,63 +135,3 @@ var Watson = {
 		});
 	}
 };
-
-// watsonShow();
-
-// $("#watson").click(function() {
-// 	if (isRecording) {
-// 		isRecording = false;
-// 		Fr.voice.export(function(blob) {
-// 			var data = new FormData();
-// 			data.append('file', blob, 'audio.wav');
-//
-// 			$.ajax({
-// 				url: '/api/conversation/speechToText/speechToText',
-// 				type: 'POST',
-// 				data: data,
-// 				contentType: false,
-// 				processData: false,
-// 				success: function(data) {
-// 					watsonListenEnd();
-// 					// TODO on success pass them to the next step
-// 					console.log(arguments);
-// 				}
-// 			});
-// 		}, 'blob');
-// 		Fr.voice.stop();
-// 	} else {
-// 		isRecording = true;
-// 		watsonConnect();
-// 		watsonLoading();
-// 		watsonLoadingEnd();
-//
-// 		setTimeout(function() {
-// 			watsonListen();
-// 			recordAudio();
-// 		}, 250);
-// 	}
-// });
-
-
-// $("#watson").click(function() {
-// 	watsonConnect();
-// 	watsonLoading();
-//
-// 	// On audio prompt retrieval, play audio
-// 	setTimeout(function() {
-// 		watsonLoadingEnd();
-// 		watsonSpeak();
-//
-// 		// After speaking, start listening
-// 		setTimeout(function() {
-// 			watsonSpeakEnd();
-// 			watsonListen();
-//
-// 			// After listening to response, hide Watson user interface
-// 			setTimeout(function() {
-// watsonListenEnd();
-// watsonHide();
-// 			}, 4000);
-// 		}, 4000);
-// 	}, 4000);
-// });
