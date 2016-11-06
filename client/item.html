@@ -148,7 +148,20 @@
 					Watson.watsonConnectEnd();
 
 					console.log(data);
-					// TODO save results to survey
+
+					$.ajax({
+						url: '/api/survey/saveSurveyResults',
+						type: 'POST',
+						data: {
+							survey: {
+								text: data.status.results[0].alternatives[0].transcript,
+								exhibit: 'Everglades Restoration'
+							}
+						},
+						success: function(res) {
+							console.log(res);
+						}
+					});
 				}
 			});
 		}, 'blob');
