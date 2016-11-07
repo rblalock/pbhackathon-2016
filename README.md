@@ -11,10 +11,10 @@ The goal for this entry is to creatively solve the River Center's (http://lrdriv
 Science Center's (https://www.sfsciencecenter.org/) need to have interactive, interesting exhibits while
 getting feedback from visitors.
 
-This app walks visitors through a guided tour of exhibits, using artificial intelligence, to best
+This app walks visitors through a guided tour of exhibits, using artificial intelligence (IBM Watson), to best
 choose which exhibits match visitors' interests.  Visitors are able to talk to a virtual guide and
 be directed to their interest, audibly.  The virtual guide can also ask the visitor questions while
-at an exhibit, thus getting valuable feedback.
+at an exhibit, thus getting valuable feedback.  The virtual guide will store the feedback along with a tone analysis of the visitor to determine if they were confused, happy, intrigued, angry, while at the exhibit.
 
 ## Technical
 The app makes use of the following technologies:
