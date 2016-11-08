@@ -25,7 +25,7 @@ The app makes use of the following technologies:
 	- Text to Speech AI
 	- Speech to Text AI
 - NodeJS for hosting the web app as well as serving up API's
-- Loopback framework for creating API's in Node
+- API Connect's Loopback framework for creating API's in Node
 - A simple in-memory, flat file database to store survey results
 - Web app (HTML/CSS/JS)
 
