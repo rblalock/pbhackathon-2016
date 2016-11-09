@@ -43,7 +43,9 @@ You'll need NodeJS and NPM installed.  You'll also need an IBM Bluemix account t
 5.  Visit `localhost:3000/` for the website.  Visit `localhost:3000/explorer` for the API docs
 
 You'll also need to train Watson on how he can help your users.  Here are some screenshots of examples
-of the setup for this entry.
+of the setup for this entry.  You can also use the `sample-watson-conversation-workspace.json` file to import
+settings in to your Watson Conversation workspace (should get you up and running quickly).  Note that this workspace
+ will have data for things in the everglades: animals, concepts, etc. of the everglades.
 
 ![Dialog](info/interests.png)
 
