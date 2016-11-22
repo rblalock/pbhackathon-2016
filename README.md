@@ -47,6 +47,8 @@ of the setup for this entry.  You can also use the `sample-watson-conversation-w
 settings in to your Watson Conversation workspace (should get you up and running quickly).  Note that this workspace
  will have data for things in the everglades: animals, concepts, etc. of the everglades.
 
+__NOTE__: You might need to create a `./uploads` folder if you experience an error that it doesn't exist.
+
 ![Dialog](info/interests.png)
 
 ![Dialog](info/entities.png)
